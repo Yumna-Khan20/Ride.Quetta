@@ -1,0 +1,3935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RideQuetta — Book a Rickshaw Anywhere in Quetta</title>
+  <meta name="description" content="Book a Rickshaw Anywhere in Quetta. Fair fares, convenient pickups, and a ride built for Quetta, Balochistan.">
+  <meta name="theme-color" content="#0d9488">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="RideQuetta — Book a Rickshaw Anywhere in Quetta">
+  <meta property="og:description" content="Fair fares, convenient pickups, and a ride built for Quetta, Balochistan.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon SVG -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%230d9488'/><path d='M25 65 h50 a5 5 0 0 0 5 -5 v-20 a10 10 0 0 0 -10 -10 h-25 l-10 15 v15 a5 5 0 0 0 5 5 z' fill='%23fef08a'/><circle cx='35' cy='68' r='9' fill='%231e293b'/><circle cx='65' cy='68' r='9' fill='%231e293b'/><circle cx='35' cy='68' r='4' fill='%23f8fafc'/><circle cx='65' cy='68' r='4' fill='%23f8fafc'/></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for Map Integration -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & DESIGN SYSTEM (Matches Lovable reference closely)
+       ========================================================================== */
+    :root {
+      --primary: #0d9488;         /* Vibrant brand teal */
+      --primary-hover: #0f766e;   /* Darker teal hover */
+      --primary-light: #ccfbf1;   /* Soft mint background */
+      --primary-subtle: #f0fdfa;  /* Ultra light teal */
+      --accent-blue: #0284c7;     /* Sky/Cyan accent */
+      --accent-blue-hover: #0369a1;
+      --accent-yellow: #f59e0b;   /* Rickshaw warm gold */
+      --emerald: #10b981;
+      --emerald-light: #ecfdf5;
+
+      --text-main: #0f172a;       /* Slate 900 */
+      --text-muted: #64748b;      /* Slate 500 */
+      --text-light: #94a3b8;      /* Slate 400 */
+      --text-white: #ffffff;
+
+      --bg-body: #ffffff;
+      --bg-surface: #ffffff;
+      --bg-alt: #f8fafc;
+      --bg-hero: linear-gradient(135deg, #f0fdf9 0%, #ffffff 50%, #f0fdf4 100%);
+
+      --border-color: #e2e8f0;    /* Slate 200 */
+      --border-light: #f1f5f9;    /* Slate 100 */
+      --border-teal: #a7f3d0;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      --shadow-float: 0 25px 50px -12px rgba(13, 148, 136, 0.15);
+
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Reset & Base */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      background-color: var(--bg-body);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    img, svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+
+    /* Typography helpers */
+    .section-label {
+      display: inline-block;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.075em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .section-desc {
+      font-size: 1.0625rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      line-height: 1.6;
+    }
+
+    .highlight-teal {
+      color: var(--accent-blue);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      transition: var(--transition);
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--primary) 100%);
+      color: var(--text-white);
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent-blue-hover) 0%, var(--primary-hover) 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-alt);
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+
+    .btn-teal-action {
+      background-color: var(--accent-blue);
+      color: var(--text-white);
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      padding: 14px 20px;
+      width: 100%;
+    }
+
+    .btn-teal-action:hover {
+      background-color: var(--accent-blue-hover);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .btn-pill {
+      border-radius: var(--radius-full);
+      padding: 6px 16px;
+      font-size: 0.875rem;
+    }
+
+    /* ==========================================================================
+       2. TOP NOTICE / DEMO MODE BANNER
+       ========================================================================== */
+    .top-banner {
+      background: #ecfdf5;
+      border-bottom: 1px solid #a7f3d0;
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+      color: #065f46;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      position: relative;
+      z-index: 60;
+    }
+
+    .top-banner strong {
+      font-weight: 700;
+    }
+
+    .demo-badge {
+      background: #047857;
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .banner-close {
+      position: absolute;
+      right: 16px;
+      color: #047857;
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    /* ==========================================================================
+       3. NAVIGATION BAR
+       ========================================================================== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 50;
+      transition: var(--transition);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.2);
+    }
+
+    .brand-icon-circle svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+    }
+
+    .brand-name-ride {
+      color: var(--text-main);
+    }
+
+    .brand-name-quetta {
+      color: var(--primary);
+      margin-left: -2px;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      list-style: none;
+    }
+
+    .nav-link {
+      padding: 8px 16px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-radius: var(--radius-full);
+      transition: var(--transition);
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      background-color: var(--bg-alt);
+    }
+
+    .nav-link.active {
+      color: #047857;
+      background-color: #ecfdf5;
+      font-weight: 600;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .track-ride-btn {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+    }
+
+    .track-ride-btn:hover {
+      color: var(--primary);
+      background: var(--primary-subtle);
+    }
+
+    .get-started-btn {
+      background: #0284c7;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .get-started-btn:hover {
+      background: #0369a1;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      color: var(--text-main);
+      padding: 8px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+    }
+
+    .mobile-menu-toggle svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* Mobile Nav Drawer */
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      top: 72px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .mobile-drawer.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .mobile-drawer-content {
+      background: #ffffff;
+      padding: 24px;
+      border-bottom-left-radius: var(--radius-xl);
+      border-bottom-right-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transform: translateY(-20px);
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-drawer.open .mobile-drawer-content {
+      transform: translateY(0);
+    }
+
+    .mobile-drawer a {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       4. HERO SECTION
+       ========================================================================== */
+    .hero-section {
+      background: var(--bg-hero);
+      padding: 56px 0 80px 0;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #065f46;
+      margin-bottom: 24px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-ring 2s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+      }
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+      margin-bottom: 20px;
+    }
+
+    .hero-title .rickshaw-highlight {
+      color: var(--accent-blue);
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 32px;
+      max-width: 540px;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    /* Honest Startup Value Highlights (Replaces fake 2000+ stats) */
+    .hero-trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+      width: 100%;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .trust-item svg {
+      width: 18px;
+      height: 18px;
+      color: var(--emerald);
+      flex-shrink: 0;
+    }
+
+    /* Hero Visual & Overlapping Floating Booking Card */
+    .hero-visual-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .rickshaw-illustration-card {
+      width: 100%;
+      height: 480px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, #fef08a 0%, #fed7aa 40%, #e0f2fe 100%);
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    /* Overlapping Quick Booking Card matching Screenshot 1 */
+    .quick-booking-card {
+      position: absolute;
+      top: 24px;
+      left: -32px;
+      width: 380px;
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-float);
+      border: 1px solid var(--border-color);
+      z-index: 10;
+    }
+
+    .field-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-icon.green-pin svg {
+      color: var(--emerald);
+    }
+
+    .input-icon.blue-pin svg {
+      color: var(--accent-blue);
+    }
+
+    .field-input {
+      width: 100%;
+      height: 46px;
+      padding: 10px 14px 10px 42px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+
+    .field-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .field-input::placeholder {
+      color: var(--text-light);
+    }
+
+    /* Ride Type Selector */
+    .ride-type-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .ride-type-card {
+      border: 1.5px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px 8px;
+      text-align: left;
+      cursor: pointer;
+      background: #ffffff;
+      transition: var(--transition);
+    }
+
+    .ride-type-card:hover {
+      border-color: #cbd5e1;
+      background: var(--bg-alt);
+    }
+
+    .ride-type-card.active {
+      border-color: var(--emerald);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 1px var(--emerald);
+    }
+
+    .ride-type-name {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .ride-type-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Autocomplete Dropdown */
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-top: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 10px 14px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-light);
+      transition: var(--transition);
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item:hover, .autocomplete-item.selected {
+      background-color: #f0fdf9;
+      color: var(--primary);
+    }
+
+    .autocomplete-item svg {
+      width: 16px;
+      height: 16px;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       5. POPULAR AREAS WE SERVE
+       ========================================================================== */
+    .areas-section {
+      padding: 80px 0;
+      background-color: #ffffff;
+    }
+
+    .areas-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 36px;
+    }
+
+    .see-all-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+
+    .see-all-link:hover {
+      color: var(--primary);
+      transform: translateX(3px);
+    }
+
+    .areas-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .area-card {
+      background-color: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .area-card:hover {
+      border-color: #a7f3d0;
+      background-color: #f0fdf4;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .area-icon-wrap {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ecfdf5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #059669;
+    }
+
+    .area-icon-wrap svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .area-name {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .area-status {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .set-pickup-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--primary);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .area-card:hover .set-pickup-badge {
+      opacity: 1;
+    }
+
+    /* ==========================================================================
+       6. COMPREHENSIVE BOOKING SECTION & INTERACTIVE MAP
+       ========================================================================== */
+    .booking-section {
+      padding: 80px 0;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .booking-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: stretch;
+    }
+
+    .booking-form-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .booking-form-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 24px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .field-textarea {
+      width: 100%;
+      height: 80px;
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      color: var(--text-main);
+      resize: vertical;
+      transition: var(--transition);
+    }
+
+    .field-textarea:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    /* Fare Estimation Card */
+    .fare-estimate-box {
+      background: #f0fdf9;
+      border: 1px solid #99f6e4;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin: 20px 0;
+    }
+
+    .fare-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .fare-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f766e;
+    }
+
+    .fare-amount {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f766e;
+    }
+
+    .fare-details {
+      font-size: 0.8125rem;
+      color: #134e4a;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px dashed #99f6e4;
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .fare-disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Validation Feedback */
+    .field-error {
+      font-size: 0.75rem;
+      color: #dc2626;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .field-group.has-error .field-input {
+      border-color: #dc2626;
+      background-color: #fef2f2;
+    }
+
+    .field-group.has-error .field-error {
+      display: block;
+    }
+
+    /* Interactive Map Card (Right column) */
+    .map-container-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .map-header-bar {
+      padding: 14px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+
+    .map-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 0.9375rem;
+    }
+
+    .map-toggle-btns {
+      display: flex;
+      background: var(--bg-alt);
+      padding: 2px;
+      border-radius: var(--radius-sm);
+    }
+
+    .map-toggle-btn {
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    .map-toggle-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: var(--shadow-sm);
+    }
+
+    #quetta-map {
+      width: 100%;
+      height: 100%;
+      min-height: 480px;
+      background: #e2e8f0;
+    }
+
+    /* Pattern Card matching original Lovable screenshot */
+    .map-placeholder-card {
+      display: none;
+      width: 100%;
+      height: 100%;
+      min-height: 480px;
+      background-color: #f0fdf9;
+      background-image: radial-gradient(#0d9488 0.8px, transparent 0.8px);
+      background-size: 20px 20px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .map-placeholder-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .map-placeholder-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    .map-placeholder-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 12px;
+    }
+
+    .map-placeholder-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      max-width: 380px;
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       7. HOW IT WORKS
+       ========================================================================== */
+    .how-section {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .how-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .how-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      position: relative;
+    }
+
+    .how-step-card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 36px 28px;
+      text-align: left;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .how-step-card:hover {
+      transform: translateY(-4px);
+      border-color: #99f6e4;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .step-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #cbd5e1;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+
+    .step-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-icon-wrap svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .step-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .step-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       8. FEATURES & BENEFITS
+       ========================================================================== */
+    .features-section {
+      padding: 80px 0;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      border-color: #a7f3d0;
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: #ecfdf5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #059669;
+      margin-bottom: 18px;
+    }
+
+    .feature-icon-box svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .feature-name {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .feature-text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       9. DRIVE WITH US & DRIVER REGISTRATION
+       ========================================================================== */
+    .drive-section {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .drive-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .drive-benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .drive-benefit-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 28px 24px;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .drive-benefit-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: #99f6e4;
+    }
+
+    .benefit-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      background: #0284c7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .benefit-icon-box svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .benefit-title {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .benefit-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .driver-reg-wrapper {
+      max-width: 820px;
+      margin: 0 auto;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .driver-reg-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+
+    .driver-reg-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    .checkbox-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       10. WHAT RIDEQUETTA AIMS TO IMPROVE (Honest Startup Focus)
+       ========================================================================== */
+    .mission-section {
+      padding: 80px 0;
+      background: #f0fdf9;
+      border-top: 1px solid #ccfbf1;
+      border-bottom: 1px solid #ccfbf1;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .mission-card {
+      background: #ffffff;
+      border: 1px solid #99f6e4;
+      border-radius: var(--radius-xl);
+      padding: 32px 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mission-pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0f766e;
+      background: #ccfbf1;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 16px;
+    }
+
+    .mission-title {
+      font-size: 1.1875rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 10px;
+    }
+
+    .mission-text {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       11. MOBILE APP ANNOUNCEMENT
+       ========================================================================== */
+    .app-section {
+      padding: 80px 0;
+      background: #ffffff;
+    }
+
+    .app-banner-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: var(--radius-xl);
+      padding: 56px 48px;
+      color: #ffffff;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 40px;
+      align-items: center;
+      box-shadow: var(--shadow-xl);
+    }
+
+    .app-banner-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .app-banner-desc {
+      font-size: 1.0625rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .app-buttons-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .app-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      color: #ffffff;
+      transition: var(--transition);
+    }
+
+    .app-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .app-btn-text small {
+      display: block;
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+    }
+
+    .app-btn-text strong {
+      font-size: 0.9375rem;
+    }
+
+    /* ==========================================================================
+       12. CONTACT SECTION
+       ========================================================================== */
+    .contact-section {
+      padding: 80px 0;
+      background: #f8fafc;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 40px;
+    }
+
+    .contact-info-card {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .contact-info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .contact-icon-bubble {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #059669;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .contact-icon-bubble svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .contact-info-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #047857;
+      margin-bottom: 4px;
+    }
+
+    .contact-info-val {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .contact-map-preview {
+      width: 100%;
+      height: 180px;
+      border-radius: var(--radius-lg);
+      background: #ffffff;
+      border: 1px solid #a7f3d0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .contact-map-preview iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .contact-form-card {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ==========================================================================
+       13. FOOTER
+       ========================================================================== */
+    .site-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 64px 0 32px 0;
+    }
+
+    .footer-top-grid {
+      display: grid;
+      grid-template-columns: 1.5fr repeat(3, 1fr);
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand-desc {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-top: 14px;
+      max-width: 320px;
+    }
+
+    .footer-col-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-main);
+      margin-bottom: 18px;
+    }
+
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      font-size: 0.9375rem;
+      color: var(--text-muted);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom-bar {
+      border-top: 1px solid var(--border-light);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       14. MODALS & TOAST NOTIFICATIONS
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-dialog {
+      background: #ffffff;
+      width: 100%;
+      max-width: 520px;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.open .modal-dialog {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal-close-btn {
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .modal-close-btn:hover {
+      color: var(--text-main);
+    }
+
+    .modal-body {
+      padding: 24px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      background: var(--bg-alt);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      pointer-events: auto;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      max-width: 420px;
+      animation: slide-in 0.3s ease forwards;
+    }
+
+    @keyframes slide-in {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Status badge in modals */
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .status-submitted {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .status-awaiting {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .status-confirmed {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    /* FAQ accordion */
+    .faq-item {
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .faq-question {
+      padding: 16px 20px;
+      background: #ffffff;
+      font-weight: 700;
+      font-size: 0.9375rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .faq-answer {
+      padding: 0 20px 16px 20px;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      display: none;
+    }
+
+    .faq-item.active .faq-answer {
+      display: block;
+    }
+
+    /* ==========================================================================
+       15. RESPONSIVE MEDIA QUERIES
+       ========================================================================== */
+    @media (max-width: 1080px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 60px;
+      }
+      .quick-booking-card {
+        position: relative;
+        left: 0;
+        top: 0;
+        width: 100%;
+        max-width: 480px;
+        margin: -60px auto 0 auto;
+      }
+      .rickshaw-illustration-card {
+        height: 380px;
+      }
+      .booking-grid {
+        grid-template-columns: 1fr;
+      }
+      .areas-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .drive-benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .footer-top-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .nav-menu, .nav-actions .track-ride-btn, .nav-actions .get-started-btn {
+        display: none;
+      }
+      .mobile-menu-toggle {
+        display: block;
+      }
+      .hero-title {
+        font-size: 2.5rem;
+      }
+      .areas-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .how-steps-grid {
+        grid-template-columns: 1fr;
+      }
+      .mission-grid {
+        grid-template-columns: 1fr;
+      }
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+      .app-banner-card {
+        grid-template-columns: 1fr;
+        padding: 36px 24px;
+      }
+      .footer-top-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-bottom-bar {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+      .areas-grid {
+        grid-template-columns: 1fr;
+      }
+      .drive-benefits-grid {
+        grid-template-columns: 1fr;
+      }
+      .quick-booking-card {
+        padding: 16px;
+      }
+    }
+
+    /* Print & Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Demo / Early Stage Status Notice -->
+  <aside class="top-banner" id="topNotice" role="complementary" aria-label="RideQuetta Startup Notice">
+    <span class="demo-badge">EARLY-STAGE STARTUP</span>
+    <span><strong>RideQuetta Dispatch Demo:</strong> We are preparing our Quetta service. Bookings placed here run in local demo mode and are not yet dispatched to live drivers.</span>
+    <button class="banner-close" onclick="document.getElementById('topNotice').style.display='none'" aria-label="Close Notice">&times;</button>
+  </aside>
+
+  <!-- Sticky Site Navigation -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-container">
+      <a href="#home" class="brand-logo" aria-label="RideQuetta Home">
+        <div class="brand-icon-circle">
+          <!-- Rickshaw Icon -->
+          <svg viewBox="0 0 24 24">
+            <path d="M4 17h16M7 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm10 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 11l2-6h9l2 6M10 5v6M14 5v6"/>
+          </svg>
+        </div>
+        <span><span class="brand-name-ride">Ride</span><span class="brand-name-quetta">Quetta</span></span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu">
+          <li><a href="#home" class="nav-link active">Home</a></li>
+          <li><a href="#book" class="nav-link">Book a Ride</a></li>
+          <li><a href="#areas" class="nav-link">Areas We Serve</a></li>
+          <li><a href="#how" class="nav-link">How It Works</a></li>
+          <li><a href="#drive" class="nav-link">Drive with us</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <button class="track-ride-btn" onclick="openTrackModal()" aria-label="Track Booking">Track Ride</button>
+        <a href="#book" class="get-started-btn">Get started</a>
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer Menu -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="mobile-drawer-content">
+      <a href="#home" class="mobile-nav-link">Home</a>
+      <a href="#book" class="mobile-nav-link">Book a Ride</a>
+      <a href="#areas" class="mobile-nav-link">Areas We Serve</a>
+      <a href="#how" class="mobile-nav-link">How It Works</a>
+      <a href="#drive" class="mobile-nav-link">Drive with us</a>
+      <a href="#contact" class="mobile-nav-link">Contact</a>
+      <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 10px;">
+        <button class="btn btn-secondary" onclick="openTrackModal(); closeMobileMenu();" style="width: 100%;">Track Ride</button>
+        <a href="#book" class="btn btn-primary" onclick="closeMobileMenu();" style="width: 100%; text-align: center;">Book a Rickshaw</a>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- ==========================================================================
+         HERO SECTION
+         ========================================================================== -->
+    <section class="hero-section" id="home">
+      <div class="container hero-grid">
+        <!-- Left Hero Content -->
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="pulse-dot"></span>
+            <span>BUILT FOR QUETTA</span>
+          </div>
+
+          <h1 class="hero-title">
+            Book a <span class="rickshaw-highlight">Rickshaw</span><br>Anywhere in Quetta
+          </h1>
+
+          <p class="hero-subtitle">
+            Your city, your ride. Explore a simpler way to plan your next rickshaw journey across Quetta with clear fare estimates and convenient booking requests.
+          </p>
+
+          <div class="hero-cta-group">
+            <a href="#book" class="btn btn-primary">
+              <span>Book a ride</span>
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+              </svg>
+            </a>
+            <a href="#drive" class="btn btn-secondary">
+              Become a driver
+            </a>
+          </div>
+
+          <!-- Honest Startup Value Highlights -->
+          <div class="hero-trust-badges">
+            <div class="trust-item">
+              <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>Fair Transparent Fares</span>
+            </div>
+            <div class="trust-item">
+              <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>Quetta-Wide Local Focus</span>
+            </div>
+            <div class="trust-item">
+              <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>Pay Direct / Cash</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Hero Visual with Floating Card -->
+        <div class="hero-visual-wrapper">
+          <!-- Quetta Scenic Backdrop & Traditional Rickshaw SVG Artwork -->
+          <div class="rickshaw-illustration-card" aria-label="Illustration of traditional Quetta passenger auto-rickshaw">
+            <svg viewBox="0 0 600 500" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#fdba74"/>
+                  <stop offset="40%" stop-color="#fef08a"/>
+                  <stop offset="85%" stop-color="#bae6fd"/>
+                  <stop offset="100%" stop-color="#e0f2fe"/>
+                </linearGradient>
+                <linearGradient id="mountGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#a8826d"/>
+                  <stop offset="100%" stop-color="#785947"/>
+                </linearGradient>
+                <linearGradient id="mountBackGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#c4a594"/>
+                  <stop offset="100%" stop-color="#947360"/>
+                </linearGradient>
+                <linearGradient id="rickshawYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#facc15"/>
+                  <stop offset="100%" stop-color="#eab308"/>
+                </linearGradient>
+                <linearGradient id="rickshawGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#10b981"/>
+                  <stop offset="100%" stop-color="#047857"/>
+                </linearGradient>
+              </defs>
+
+              <!-- Sky -->
+              <rect width="600" height="500" fill="url(#skyGrad)"/>
+
+              <!-- Quetta Mountain Ridges (Chiltan & Zarghoon) -->
+              <polygon points="0,320 80,240 160,280 260,190 350,260 440,180 540,270 600,220 600,500 0,500" fill="url(#mountBackGrad)" opacity="0.6"/>
+              <polygon points="0,350 110,270 210,310 320,230 420,300 510,240 600,290 600,500 0,500" fill="url(#mountGrad)" opacity="0.8"/>
+
+              <!-- Trees / Greenery -->
+              <circle cx="520" cy="360" r="45" fill="#15803d" opacity="0.9"/>
+              <circle cx="560" cy="350" r="50" fill="#166534" opacity="0.9"/>
+              <circle cx="480" cy="375" r="35" fill="#14532d" opacity="0.9"/>
+
+              <!-- City Road & Curb -->
+              <rect x="0" y="380" width="600" height="120" fill="#334155"/>
+              <line x1="0" y1="390" x2="600" y2="390" stroke="#f8fafc" stroke-width="4" stroke-dasharray="25 15"/>
+              <rect x="0" y="375" width="600" height="8" fill="#e2e8f0"/>
+
+              <!-- Pakistani Rickshaw Illustration -->
+              <g transform="translate(180, 160)">
+                <!-- Rickshaw Canopy (Yellow Top) -->
+                <path d="M120 70 C160 55, 300 55, 340 70 C360 85, 365 140, 360 180 L115 180 C110 130, 115 85, 120 70 Z" fill="url(#rickshawYellow)" stroke="#ca8a04" stroke-width="2"/>
+                
+                <!-- Windshield & Pillars -->
+                <path d="M130 90 L160 170 L250 170 L240 90 Z" fill="#e0f2fe" opacity="0.75" stroke="#64748b" stroke-width="2"/>
+                <line x1="250" y1="90" x2="260" y2="170" stroke="#0f172a" stroke-width="4"/>
+                <line x1="340" y1="90" x2="350" y2="170" stroke="#0f172a" stroke-width="4"/>
+
+                <!-- Lower Body (Pakistani Emerald Green & Decorative Art) -->
+                <path d="M100 180 L370 180 L365 240 L95 240 Z" fill="url(#rickshawGreen)"/>
+                
+                <!-- Decorative Truck-art stripes -->
+                <rect x="100" y="195" width="270" height="8" fill="#f59e0b"/>
+                <rect x="100" y="210" width="270" height="5" fill="#dc2626"/>
+                <rect x="100" y="220" width="270" height="6" fill="#38bdf8"/>
+
+                <!-- Front Apron & Mudguard -->
+                <path d="M95 180 L65 220 L95 245 Z" fill="#047857"/>
+                
+                <!-- Headlight -->
+                <circle cx="68" cy="220" r="12" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+                <polygon points="68,220 0,200 0,240" fill="#fef08a" opacity="0.3"/>
+
+                <!-- Front Wheel -->
+                <circle cx="85" cy="270" r="26" fill="#0f172a"/>
+                <circle cx="85" cy="270" r="14" fill="#cbd5e1"/>
+                <circle cx="85" cy="270" r="5" fill="#475569"/>
+
+                <!-- Rear Wheel -->
+                <circle cx="310" cy="270" r="32" fill="#0f172a"/>
+                <circle cx="310" cy="270" r="18" fill="#cbd5e1"/>
+                <circle cx="310" cy="270" r="6" fill="#475569"/>
+
+                <!-- Passenger Seat Cushion -->
+                <rect x="250" y="150" width="95" height="30" rx="5" fill="#b91c1c"/>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Floating Quick Booking Widget matching Screenshot 1 -->
+          <div class="quick-booking-card" id="quickBookingCard">
+            <div class="field-group">
+              <label class="field-label" for="quickPickup">PICKUP LOCATION</label>
+              <div class="input-with-icon">
+                <span class="input-icon green-pin">
+                  <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                </span>
+                <input type="text" id="quickPickup" class="field-input" placeholder="e.g. Jinnah Town" autocomplete="off">
+              </div>
+              <div class="autocomplete-list" id="quickPickupList"></div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="quickDestination">DESTINATION</label>
+              <div class="input-with-icon">
+                <span class="input-icon blue-pin">
+                  <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
+                </span>
+                <input type="text" id="quickDestination" class="field-input" placeholder="e.g. Quetta Cantt" autocomplete="off">
+              </div>
+              <div class="autocomplete-list" id="quickDestinationList"></div>
+            </div>
+
+            <label class="field-label">RIDE TYPE</label>
+            <div class="ride-type-selector">
+              <div class="ride-type-card active" data-type="standard" onclick="selectRideType('standard', this)">
+                <div class="ride-type-name">Standard</div>
+                <div class="ride-type-time">5–8 min</div>
+              </div>
+              <div class="ride-type-card" data-type="shared" onclick="selectRideType('shared', this)">
+                <div class="ride-type-name">Shared</div>
+                <div class="ride-type-time">8–12 min</div>
+              </div>
+              <div class="ride-type-card" data-type="premium" onclick="selectRideType('premium', this)">
+                <div class="ride-type-name">Premium</div>
+                <div class="ride-type-time">4–6 min</div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-teal-action" onclick="transferQuickToMainBooking()">
+              Book a Rickshaw
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         POPULAR AREAS WE SERVE
+         ========================================================================== -->
+    <section class="areas-section" id="areas">
+      <div class="container">
+        <div class="areas-header">
+          <div>
+            <span class="section-label">ACROSS QUETTA</span>
+            <h2 class="section-title">Popular areas we serve</h2>
+          </div>
+          <a href="#book" class="see-all-link">
+            <span>Explore all locations</span>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="areas-grid" id="areasGrid">
+          <!-- 12 Real Quetta Areas populated dynamically / matching screenshot 2 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         COMPREHENSIVE BOOKING SECTION & MAP
+         ========================================================================== -->
+    <section class="booking-section" id="book">
+      <div class="container">
+        <div style="margin-bottom: 32px;">
+          <span class="section-label">REQUEST A RIDE</span>
+          <h2 class="section-title">Book your Quetta Rickshaw</h2>
+          <p class="section-desc">Enter your pickup and destination to calculate a transparent estimated fare and submit your ride request.</p>
+        </div>
+
+        <div class="booking-grid">
+          <!-- Left Column: Booking Form -->
+          <div class="booking-form-card">
+            <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
+              <div class="field-group" id="pickupGroup">
+                <label class="field-label" for="mainPickup">PICKUP LOCATION *</label>
+                <div class="input-with-icon">
+                  <span class="input-icon green-pin">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                  </span>
+                  <input type="text" id="mainPickup" class="field-input" placeholder="e.g. Jinnah Town, Quetta" autocomplete="off" required>
+                </div>
+                <div class="field-error" id="pickupError">Please enter a pickup location in Quetta.</div>
+                <div class="autocomplete-list" id="mainPickupList"></div>
+              </div>
+
+              <div class="field-group" id="destinationGroup">
+                <label class="field-label" for="mainDestination">DESTINATION *</label>
+                <div class="input-with-icon">
+                  <span class="input-icon blue-pin">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/></svg>
+                  </span>
+                  <input type="text" id="mainDestination" class="field-input" placeholder="e.g. Quetta Cantt" autocomplete="off" required>
+                </div>
+                <div class="field-error" id="destinationError">Please enter a destination different from pickup.</div>
+                <div class="autocomplete-list" id="mainDestinationList"></div>
+              </div>
+
+              <label class="field-label">RIDE TYPE</label>
+              <div class="ride-type-selector" id="mainRideTypeSelector">
+                <div class="ride-type-card active" data-type="standard" onclick="selectMainRideType('standard', this)">
+                  <div class="ride-type-name">Standard</div>
+                  <div class="ride-type-time">Private &bull; 5–8 min</div>
+                </div>
+                <div class="ride-type-card" data-type="shared" onclick="selectMainRideType('shared', this)">
+                  <div class="ride-type-name">Shared</div>
+                  <div class="ride-type-time">Budget &bull; 8–12 min</div>
+                </div>
+                <div class="ride-type-card" data-type="premium" onclick="selectMainRideType('premium', this)">
+                  <div class="ride-type-name">Premium</div>
+                  <div class="ride-type-time">Comfort &bull; 4–6 min</div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="field-group" id="nameGroup">
+                  <label class="field-label" for="passengerName">PASSENGER NAME *</label>
+                  <input type="text" id="passengerName" class="field-input" placeholder="e.g. Ahmed Khan" required style="padding-left: 14px;">
+                  <div class="field-error" id="nameError">Please enter your name.</div>
+                </div>
+
+                <div class="field-group" id="phoneGroup">
+                  <label class="field-label" for="passengerPhone">MOBILE NUMBER *</label>
+                  <input type="tel" id="passengerPhone" class="field-input" placeholder="0300 1234567" required style="padding-left: 14px;">
+                  <div class="field-error" id="phoneError">Enter a valid Pakistani mobile (03XX XXXXXXX).</div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="driverNotes">NOTES FOR DRIVER (OPTIONAL)</label>
+                <textarea id="driverNotes" class="field-textarea" placeholder="e.g. I'll be waiting near the green gate, opposite main market..."></textarea>
+              </div>
+
+              <!-- Transparent Live Fare Estimation Box -->
+              <div class="fare-estimate-box" id="fareBox">
+                <div class="fare-top-row">
+                  <span class="fare-label">ESTIMATED FARE</span>
+                  <span class="fare-amount" id="fareDisplay">PKR 150 – 190</span>
+                </div>
+                <div class="fare-details">
+                  <span id="fareDistanceText">Estimated Distance: ~4.5 km</span>
+                  <span id="fareRateText">Base PKR 80 + PKR 35/km</span>
+                </div>
+                <p class="fare-disclaimer">
+                  Estimated fare only. Final fare may vary after route and service confirmation.
+                </p>
+              </div>
+
+              <button type="submit" id="submitBookingBtn" class="btn btn-teal-action" style="font-size: 1rem; padding: 15px;">
+                Confirm booking
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Column: Interactive Map & Matching Status Card -->
+          <div class="map-container-card">
+            <div class="map-header-bar">
+              <div class="map-title-row">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Quetta City Route Map</span>
+              </div>
+              <div class="map-toggle-btns">
+                <button type="button" class="map-toggle-btn active" id="btnShowLiveMap" onclick="toggleMapView('live')">Live Map</button>
+                <button type="button" class="map-toggle-btn" id="btnShowPattern" onclick="toggleMapView('pattern')">Dispatch View</button>
+              </div>
+            </div>
+
+            <!-- Leaflet Interactive Map -->
+            <div id="quetta-map"></div>
+
+            <!-- Dotted Pattern Card matching original Lovable screenshot 3 -->
+            <div class="map-placeholder-card" id="mapPlaceholder">
+              <div class="map-placeholder-icon">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <h3 class="map-placeholder-title">Interactive map</h3>
+              <p class="map-placeholder-desc">
+                Live map and driver tracking arrive in the next release. For now, our matching engine handles your ride in the background.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         HOW IT WORKS
+         ========================================================================== -->
+    <section class="how-section" id="how">
+      <div class="container">
+        <div class="how-header">
+          <span class="section-label">SIMPLE & RELIABLE</span>
+          <h2 class="section-title">How It Works</h2>
+          <p class="section-desc" style="margin: 0 auto;">Getting a rickshaw across Quetta shouldn't require long street-side negotiations. Here is how RideQuetta helps you plan your trip.</p>
+        </div>
+
+        <div class="how-steps-grid">
+          <!-- Step 1 -->
+          <div class="how-step-card">
+            <div class="step-number">01</div>
+            <div class="step-icon-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Enter Your Trip</h3>
+            <p class="step-desc">Choose your pickup location and destination from our Quetta landmarks database or enter a custom address.</p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="how-step-card">
+            <div class="step-number">02</div>
+            <div class="step-icon-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Submit Your Request</h3>
+            <p class="step-desc">Review your ride details, inspect the transparent estimated fare breakdown, and submit a booking request.</p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="how-step-card">
+            <div class="step-number">03</div>
+            <div class="step-icon-wrap">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+            </div>
+            <h3 class="step-title">Confirm Your Ride</h3>
+            <p class="step-desc">Wait for confirmation through the configured booking system before starting your journey. Pay your driver directly in cash.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         FEATURES & BENEFITS
+         ========================================================================== -->
+    <section class="features-section">
+      <div class="container">
+        <div style="text-align: center;">
+          <span class="section-label">WHY RIDEQUETTA</span>
+          <h2 class="section-title">Designed for Everyday Quetta Travel</h2>
+          <p class="section-desc" style="margin: 0 auto;">Practical, honest transportation features tailored for residents, students, and workers in Quetta.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon-box">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="feature-name">Convenient Booking</h3>
+            <p class="feature-text">Submit your ride request without negotiating every detail through a lengthy street-side back-and-forth.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h3 class="feature-name">Clear Fare Estimates</h3>
+            <p class="feature-text">See an estimated fare before sending your request, based on actual Quetta road distances and fair base rates.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <h3 class="feature-name">Local Focus</h3>
+            <p class="feature-text">Designed specifically around the unique geography, bazaars, towns, and roads of Quetta, Balochistan.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h3 class="feature-name">Booking Transparency</h3>
+            <p class="feature-text">View your unique request reference and check your booking dispatch status whenever you need.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <h3 class="feature-name">Passenger Information</h3>
+            <p class="feature-text">We only request essential trip coordinates and phone numbers for your ride pickup, preserving your privacy.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon-box">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </div>
+            <h3 class="feature-name">Driver Opportunities</h3>
+            <p class="feature-text">Empowering Quetta rickshaw owners and operators with steady passenger requests and dignified local earnings.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         DRIVE WITH US & DRIVER REGISTRATION (Matching Screenshot 4)
+         ========================================================================== -->
+    <section class="drive-section" id="drive">
+      <div class="container">
+        <div class="drive-header">
+          <span class="section-label">DRIVE WITH US</span>
+          <h2 class="section-title">More rides. More earnings. Less hassle.</h2>
+          <p class="section-desc" style="margin: 0 auto;">Join local rickshaw drivers partnering with RideQuetta across Quetta.</p>
+        </div>
+
+        <!-- 4 Benefit Cards matching Screenshot 4 -->
+        <div class="drive-benefits-grid">
+          <div class="drive-benefit-card">
+            <div class="benefit-icon-box">
+              <!-- Higher Earnings Icon -->
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+              </svg>
+            </div>
+            <h3 class="benefit-title">Higher earnings</h3>
+            <p class="benefit-desc">Earn more per day through organized pickup bookings vs. empty roaming on busy Quetta roads.</p>
+          </div>
+
+          <div class="drive-benefit-card">
+            <div class="benefit-icon-box">
+              <!-- Weekly Payouts Icon -->
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-title">Weekly payouts</h3>
+            <p class="benefit-desc">Reliable transfers and clear digital records. No more chasing fares or losing out on honest work.</p>
+          </div>
+
+          <div class="drive-benefit-card">
+            <div class="benefit-icon-box">
+              <!-- Safety Icon -->
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-title">Safety & Support</h3>
+            <p class="benefit-desc">Dedicated local coordination on every accepted ride. Direct contact with our Quetta team.</p>
+          </div>
+
+          <div class="drive-benefit-card">
+            <div class="benefit-icon-box">
+              <!-- 24/7 Support Icon -->
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            </div>
+            <h3 class="benefit-title">24/7 support</h3>
+            <p class="benefit-desc">Real humans speaking English, Urdu, and regional languages to assist you whenever on the road.</p>
+          </div>
+        </div>
+
+        <!-- Driver Registration Form -->
+        <div class="driver-reg-wrapper" id="driverRegFormWrapper">
+          <h3 class="driver-reg-title">Register Your Interest as a Driver</h3>
+          <p class="driver-reg-desc">Interested in joining our Quetta rickshaw booking network? Fill out the form below to register your vehicle and service area.</p>
+
+          <form id="driverForm" onsubmit="handleDriverSubmit(event)">
+            <div class="form-row">
+              <div class="field-group" id="driverNameGroup">
+                <label class="field-label" for="driverName">FULL NAME *</label>
+                <input type="text" id="driverName" class="field-input" placeholder="e.g. Mohammad Bilal" required style="padding-left: 14px;">
+                <div class="field-error" id="driverNameError">Please enter your full name.</div>
+              </div>
+
+              <div class="field-group" id="driverPhoneGroup">
+                <label class="field-label" for="driverPhone">MOBILE NUMBER *</label>
+                <input type="tel" id="driverPhone" class="field-input" placeholder="0300 9876543" required style="padding-left: 14px;">
+                <div class="field-error" id="driverPhoneError">Enter a valid Pakistani mobile number.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field-group">
+                <label class="field-label" for="driverCnic">CNIC NUMBER (OPTIONAL)</label>
+                <input type="text" id="driverCnic" class="field-input" placeholder="54400-XXXXXXX-X" style="padding-left: 14px;">
+              </div>
+
+              <div class="field-group" id="driverPlateGroup">
+                <label class="field-label" for="driverPlate">VEHICLE REGISTRATION NUMBER *</label>
+                <input type="text" id="driverPlate" class="field-input" placeholder="e.g. QTA-8492" required style="padding-left: 14px;">
+                <div class="field-error" id="driverPlateError">Please enter your vehicle registration number.</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="field-group">
+                <label class="field-label" for="vehicleType">VEHICLE TYPE *</label>
+                <select id="vehicleType" class="field-input" style="padding-left: 14px;">
+                  <option value="4-stroke">4-Stroke CNG / Petrol Passenger Rickshaw</option>
+                  <option value="2-stroke">2-Stroke Classic Auto-Rickshaw</option>
+                  <option value="electric">Electric / E-Rickshaw</option>
+                  <option value="loader">Loader / Cargo Rickshaw</option>
+                </select>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="licenceStatus">DRIVING LICENCE STATUS *</label>
+                <select id="licenceStatus" class="field-input" style="padding-left: 14px;">
+                  <option value="valid">Valid Driving Licence</option>
+                  <option value="learner">Learner's Permit</option>
+                  <option value="in-process">Renewal / In Process</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">PRIMARY SERVICE AREAS IN QUETTA</label>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <label style="font-size: 0.8125rem; background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" name="driverArea" value="Jinnah Town" checked> Jinnah Town
+                </label>
+                <label style="font-size: 0.8125rem; background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" name="driverArea" value="Satellite Town" checked> Satellite Town
+                </label>
+                <label style="font-size: 0.8125rem; background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" name="driverArea" value="Sariab Road" checked> Sariab Road
+                </label>
+                <label style="font-size: 0.8125rem; background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" name="driverArea" value="Quetta Cantt"> Quetta Cantt
+                </label>
+                <label style="font-size: 0.8125rem; background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" name="driverArea" value="Liaquat Bazaar"> Liaquat Bazaar
+                </label>
+                <label style="font-size: 0.8125rem; background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: var(--radius-full); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" name="driverArea" value="Airport Road"> Airport Road
+                </label>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="driverMessage">ADDITIONAL MESSAGE (OPTIONAL)</label>
+              <textarea id="driverMessage" class="field-textarea" placeholder="Years of driving in Quetta, preferred working shifts, etc."></textarea>
+            </div>
+
+            <div class="checkbox-group">
+              <input type="checkbox" id="driverConsent" required>
+              <label for="driverConsent" class="checkbox-label">
+                I confirm that my details are accurate and I consent to RideQuetta contacting me regarding driver onboarding in Quetta.
+              </label>
+            </div>
+
+            <button type="submit" id="submitDriverBtn" class="btn btn-primary" style="width: 100%; padding: 14px;">
+              Submit Driver Application
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         MISSION & IMPROVEMENTS (Honest Early-Stage Alternative to Testimonials)
+         ========================================================================== -->
+    <section class="mission-section">
+      <div class="container">
+        <div style="text-align: center;">
+          <span class="section-label">OUR MISSION</span>
+          <h2 class="section-title">What RideQuetta Aims to Improve</h2>
+          <p class="section-desc" style="margin: 0 auto;">As an early-stage startup, we are focused on solving the genuine daily transit challenges faced by Quetta commuters and drivers.</p>
+        </div>
+
+        <div class="mission-grid">
+          <div class="mission-card">
+            <span class="mission-pill">Problem 01</span>
+            <h3 class="mission-title">Clearer fare expectations</h3>
+            <p class="mission-text">
+              Eliminating arbitrary overcharging before starting a journey through clear, distance-based transparent fare estimates calculated specifically for Quetta routes.
+            </p>
+          </div>
+
+          <div class="mission-card">
+            <span class="mission-pill">Problem 02</span>
+            <h3 class="mission-title">Easier local ride requests</h3>
+            <p class="mission-text">
+              Saving passengers from walking long distances to main roads or waiting indefinitely in harsh winter or summer weather just to hail a passing rickshaw.
+            </p>
+          </div>
+
+          <div class="mission-card">
+            <span class="mission-pill">Problem 03</span>
+            <h3 class="mission-title">Dignified driver opportunities</h3>
+            <p class="mission-text">
+              Providing hardworking Quetta drivers with an organized booking channel that reduces fuel wasted on empty rounds and guarantees fair compensation.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         MOBILE APP ANNOUNCEMENT
+         ========================================================================== -->
+    <section class="app-section">
+      <div class="container">
+        <div class="app-banner-card">
+          <div>
+            <span class="section-label" style="color: #5eead4;">FUTURE ROADMAP</span>
+            <h2 class="app-banner-title">RideQuetta Is Starting Here</h2>
+            <p class="app-banner-desc">
+              We're building a simpler way to request rickshaw rides in Quetta. Explore our lightweight web experience while our dedicated mobile apps are under development.
+            </p>
+            <div class="app-buttons-group">
+              <button class="app-btn" onclick="openAppModal('Google Play')">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3.609 1.814L13.792 12 3.61 22.186a1.996 1.996 0 01-.61-1.428V3.242c0-.555.225-1.057.609-1.428zM15.207 13.414L5.025 23.597c.45.247.98.247 1.455-.027l11.412-6.521-2.685-3.635zM17.892 10.586l-2.685-3.635 2.685-3.635 2.378 1.359c1.037.592 1.037 1.983 0 2.576l-2.378 3.335zM5.025.403l10.182 10.183 2.685-3.635L6.48.43C6.005.156 5.475.156 5.025.403z"/>
+                </svg>
+                <div class="app-btn-text">
+                  <small>Coming Soon on</small>
+                  <strong>Google Play</strong>
+                </div>
+              </button>
+
+              <button class="app-btn" onclick="openAppModal('App Store')">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.61-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.63 1.34-.56.64-1.05 1.7-0.92 2.73 1.01.08 2.02-.47 2.63-1.22z"/>
+                </svg>
+                <div class="app-btn-text">
+                  <small>Coming Soon on</small>
+                  <strong>App Store</strong>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Graphic Badge -->
+          <div style="text-align: center; background: rgba(255, 255, 255, 0.05); padding: 32px; border-radius: var(--radius-lg); border: 1px dashed rgba(255, 255, 255, 0.2);">
+            <div style="font-size: 2.5rem; margin-bottom: 8px;">📱</div>
+            <div style="font-weight: 700; font-size: 1.125rem; margin-bottom: 6px;">Fast & Offline-Ready Web App</div>
+            <p style="font-size: 0.875rem; color: #94a3b8;">This website is fully mobile-optimized. You can bookmark or "Add to Home Screen" on Android & iPhone right now.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         CONTACT SECTION (Matching Screenshot 5)
+         ========================================================================== -->
+    <section class="contact-section" id="contact">
+      <div class="container">
+        <div style="margin-bottom: 36px;">
+          <span class="section-label">GET IN TOUCH</span>
+          <h2 class="section-title">Contact RideQuetta</h2>
+          <p class="section-desc">Have questions, feedback, or want to partner with us in Quetta? Reach out to our local team.</p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Left Info Card matching Screenshot 5 -->
+          <div class="contact-info-card">
+            <div class="contact-info-item">
+              <div class="contact-icon-bubble">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">PHONE</div>
+                <div class="contact-info-val" id="displayPhone">+92 81 2890 000</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-icon-bubble">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">EMAIL</div>
+                <div class="contact-info-val" id="displayEmail">contact@ridequetta.pk</div>
+              </div>
+            </div>
+
+            <div class="contact-info-item">
+              <div class="contact-icon-bubble">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+              </div>
+              <div>
+                <div class="contact-info-label">OFFICE</div>
+                <div class="contact-info-val">Jinnah Road, Quetta, Balochistan</div>
+              </div>
+            </div>
+
+            <!-- Mini Map Preview matching Screenshot 5 -->
+            <div class="contact-map-preview">
+              <div style="position: absolute; top: 10px; left: 10px; z-index: 10; background: #ffffff; padding: 4px 10px; border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 700; box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 4px;">
+                <span>Quetta HQ</span>
+              </div>
+              <iframe 
+                title="Quetta Map Location"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=66.95%2C30.15%2C67.05%2C30.22&amp;layer=mapnik&amp;marker=30.195%2C67.012" 
+                loading="lazy">
+              </iframe>
+            </div>
+          </div>
+
+          <!-- Right Form Card matching Screenshot 5 -->
+          <div class="contact-form-card">
+            <form id="contactForm" onsubmit="handleContactSubmit(event)">
+              <div class="form-row">
+                <div class="field-group">
+                  <label class="field-label" for="contactName">Name</label>
+                  <input type="text" id="contactName" class="field-input" placeholder="Your full name" required style="padding-left: 14px;">
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="contactEmail">Email</label>
+                  <input type="email" id="contactEmail" class="field-input" placeholder="name@example.com" required style="padding-left: 14px;">
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="contactSubject">Subject</label>
+                <input type="text" id="contactSubject" class="field-input" placeholder="How can we help?" required style="padding-left: 14px;">
+              </div>
+
+              <div class="field-group">
+                <label class="field-label" for="contactMessage">Message</label>
+                <textarea id="contactMessage" class="field-textarea" style="height: 140px;" placeholder="Write your message here..." required></textarea>
+              </div>
+
+              <button type="submit" class="btn btn-teal-action" style="padding: 14px 28px; width: auto;">
+                Send message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       FOOTER
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top-grid">
+        <div>
+          <a href="#home" class="brand-logo" aria-label="RideQuetta">
+            <div class="brand-icon-circle">
+              <svg viewBox="0 0 24 24"><path d="M4 17h16M7 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm10 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 11l2-6h9l2 6M10 5v6M14 5v6"/></svg>
+            </div>
+            <span><span class="brand-name-ride">Ride</span><span class="brand-name-quetta">Quetta</span></span>
+          </a>
+          <p class="footer-brand-desc">
+            Quetta's dedicated rickshaw booking platform. Providing honest fare estimates, transparent request matching, and reliable local transit across Balochistan's provincial capital.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#book">Book a Ride</a></li>
+            <li><a href="#areas">Areas We Serve</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#drive">Drive With Us</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Quetta Areas</h4>
+          <ul class="footer-links">
+            <li><a href="#book" onclick="quickSelectArea('Jinnah Town')">Jinnah Town</a></li>
+            <li><a href="#book" onclick="quickSelectArea('Satellite Town')">Satellite Town</a></li>
+            <li><a href="#book" onclick="quickSelectArea('Sariab Road')">Sariab Road</a></li>
+            <li><a href="#book" onclick="quickSelectArea('Quetta Cantt')">Quetta Cantt</a></li>
+            <li><a href="#book" onclick="quickSelectArea('Liaquat Bazaar')">Liaquat Bazaar</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Company & Legal</h4>
+          <ul class="footer-links">
+            <li><a href="javascript:void(0)" onclick="openLegalModal('faq')">Frequently Asked Questions</a></li>
+            <li><a href="javascript:void(0)" onclick="openLegalModal('privacy')">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)" onclick="openLegalModal('terms')">Terms & Conditions</a></li>
+            <li><a href="javascript:void(0)" onclick="openTrackModal()">Track My Ride Request</a></li>
+            <li><a href="javascript:void(0)" onclick="openWhatsAppChat()">Chat on WhatsApp</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div>&copy; 2026 RideQuetta. Built for Quetta, Pakistan. All rights reserved.</div>
+        <div style="display: flex; gap: 16px;">
+          <span>Provincial Hub: Quetta, Balochistan</span>
+          <span>&bull;</span>
+          <a href="javascript:void(0)" onclick="openConfigModal()" style="color: var(--primary);">Backend Status: Demo Mode</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+  <!-- 1. Booking Review & Confirmation Modal -->
+  <div class="modal-overlay" id="bookingReviewModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Review Your Ride Request</h3>
+        <span class="modal-close-btn" onclick="closeModal('bookingReviewModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div style="background: var(--bg-alt); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 20px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8125rem; font-weight: 700; color: var(--text-muted);">PICKUP</span>
+            <span id="reviewPickup" style="font-weight: 700; text-align: right;">—</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8125rem; font-weight: 700; color: var(--text-muted);">DESTINATION</span>
+            <span id="reviewDestination" style="font-weight: 700; text-align: right;">—</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-size: 0.8125rem; font-weight: 700; color: var(--text-muted);">RIDE TYPE</span>
+            <span id="reviewType" class="status-pill status-confirmed">Standard</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="font-size: 0.8125rem; font-weight: 700; color: var(--text-muted);">ESTIMATED FARE</span>
+            <span id="reviewFare" style="font-weight: 800; color: #0f766e; font-size: 1.1rem;">PKR —</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 4px;">Passenger: <strong id="reviewPassenger" style="color: var(--text-main);">—</strong></div>
+          <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 4px;">Phone: <strong id="reviewPhone" style="color: var(--text-main);">—</strong></div>
+          <div style="font-size: 0.875rem; color: var(--text-muted);">Notes: <span id="reviewNotes" style="font-style: italic;">None</span></div>
+        </div>
+
+        <div style="background: #fefce8; border: 1px solid #fef08a; padding: 12px; border-radius: var(--radius-sm); font-size: 0.8125rem; color: #854d0e;">
+          ⚠️ <strong>RideQuetta Notice:</strong> Once submitted, your request is logged with status <em>"Request submitted — Awaiting confirmation"</em>. Pay directly to your driver upon arrival.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('bookingReviewModal')">Edit Details</button>
+        <button type="button" class="btn btn-primary" id="confirmFinalBookingBtn" onclick="finalizeBooking()">Confirm & Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Booking Success Confirmation Modal -->
+  <div class="modal-overlay" id="bookingSuccessModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #047857;">Booking Request Submitted!</h3>
+        <span class="modal-close-btn" onclick="closeModal('bookingSuccessModal')">&times;</span>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+          <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 4px;">Your Booking Reference</p>
+        <div id="successBookingId" style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); letter-spacing: 0.05em; margin-bottom: 12px;">RQ-000000</div>
+
+        <div style="margin-bottom: 20px;">
+          <span class="status-pill status-submitted" id="successStatusBadge">Request submitted &bull; Awaiting confirmation</span>
+        </div>
+
+        <div style="background: var(--bg-alt); padding: 14px; border-radius: var(--radius-md); text-align: left; font-size: 0.875rem; line-height: 1.5; margin-bottom: 20px;">
+          <div>📍 <strong>From:</strong> <span id="successPickupText">—</span></div>
+          <div>🏁 <strong>To:</strong> <span id="successDestinationText">—</span></div>
+          <div>💰 <strong>Est. Fare:</strong> <span id="successFareText">—</span></div>
+        </div>
+
+        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 16px;">
+          Save this booking reference. You can check the request status anytime using the "Track Ride" button in the menu.
+        </p>
+
+        <button type="button" class="btn btn-secondary" onclick="shareOnWhatsApp()" style="width: 100%; margin-bottom: 8px; justify-content: center; gap: 8px;">
+          <span>📲 Share Ride Request via WhatsApp</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('bookingSuccessModal')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Track Ride Modal -->
+  <div class="modal-overlay" id="trackRideModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Track Ride Request</h3>
+        <span class="modal-close-btn" onclick="closeModal('trackRideModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 16px;">
+          Enter your unique booking reference (e.g. RQ-849201) to view current dispatch status.
+        </p>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+          <input type="text" id="trackInput" class="field-input" placeholder="e.g. RQ-123456" style="padding-left: 14px; text-transform: uppercase;">
+          <button type="button" class="btn btn-primary" onclick="lookupBookingStatus()">Search</button>
+        </div>
+
+        <div id="trackResultBox" style="display: none; background: var(--bg-alt); padding: 18px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <strong id="trackResultId" style="font-size: 1.1rem;">RQ-000000</strong>
+            <span class="status-pill status-awaiting" id="trackResultStatus">Awaiting Confirmation</span>
+          </div>
+          <div style="font-size: 0.875rem; line-height: 1.6; color: var(--text-muted);">
+            <div><strong>Route:</strong> <span id="trackResultRoute">—</span></div>
+            <div><strong>Type:</strong> <span id="trackResultType">Standard</span></div>
+            <div><strong>Estimated Fare:</strong> <span id="trackResultFare">—</span></div>
+            <div><strong>Timestamp:</strong> <span id="trackResultTime">—</span></div>
+          </div>
+        </div>
+        <div id="trackErrorBox" style="display: none; color: #dc2626; font-size: 0.875rem; padding: 10px; background: #fef2f2; border-radius: var(--radius-sm);">
+          No booking request found with that reference. Please check and try again.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('trackRideModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Driver Registration Success Modal -->
+  <div class="modal-overlay" id="driverSuccessModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #047857;">Driver Application Received!</h3>
+        <span class="modal-close-btn" onclick="closeModal('driverSuccessModal')">&times;</span>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+          <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 4px;">Registration ID</p>
+        <div id="driverSuccessRef" style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-bottom: 12px;">DRV-00000</div>
+        <p style="font-size: 0.9375rem; color: var(--text-main); line-height: 1.5; margin-bottom: 16px;">
+          Thank you for registering your interest in partnering with RideQuetta. Our Quetta operations coordinator will review your vehicle details and reach out via phone.
+        </p>
+        <div style="background: #f0fdf9; border: 1px solid #99f6e4; padding: 12px; border-radius: var(--radius-md); font-size: 0.8125rem; color: #0f766e;">
+          ℹ️ In Demo Mode, this registration is logged locally for demonstration. Once production dispatch launches, identity and vehicle registration checks will follow.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('driverSuccessModal')">Understood</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. App Launch Alert Modal -->
+  <div class="modal-overlay" id="appAlertModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Mobile App Coming Soon</h3>
+        <span class="modal-close-btn" onclick="closeModal('appAlertModal')">&times;</span>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9375rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 16px;">
+          Our native mobile applications for <strong id="appStoreName">Google Play</strong> are currently in active development.
+        </p>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px;">
+          Want to be notified the moment we launch on the app store? Leave your phone number or email below:
+        </p>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="appNotifyInput" class="field-input" placeholder="Your mobile or email" style="padding-left: 14px;">
+          <button type="button" class="btn btn-primary" onclick="handleAppWaitlist()">Notify Me</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('appAlertModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Legal & Information Modal (FAQ, Terms, Privacy) -->
+  <div class="modal-overlay" id="legalModal">
+    <div class="modal-dialog" style="max-width: 640px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="legalModalTitle">Information</h3>
+        <span class="modal-close-btn" onclick="closeModal('legalModal')">&times;</span>
+      </div>
+      <div class="modal-body" id="legalModalBody">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('legalModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Backend & Config Modal -->
+  <div class="modal-overlay" id="configModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">System & Backend Configuration</h3>
+        <span class="modal-close-btn" onclick="closeModal('configModal')">&times;</span>
+      </div>
+      <div class="modal-body" style="font-size: 0.875rem; line-height: 1.6; color: var(--text-muted);">
+        <p style="margin-bottom: 12px;">
+          RideQuetta is currently operating in <strong>Demo Mode</strong>. No external API keys are bundled inside this public static file to keep sensitive credentials secure.
+        </p>
+        <div style="background: var(--bg-alt); padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-family: monospace; font-size: 0.8125rem; margin-bottom: 12px;">
+          // Architecture Setup:<br>
+          Backend Provider: Demo (LocalStorage Fallback)<br>
+          Supabase URL: [Configurable via RideQuettaConfig]<br>
+          Supabase Anon Key: [Configurable]<br>
+          Service Location: Quetta, Balochistan, PK
+        </div>
+        <p>
+          To connect a real production database, update the <code>RideQuettaConfig.supabase</code> block at the top of the internal script in <code>index.html</code>.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('configModal')">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Leaflet JS for Map Integration -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- ==========================================================================
+       VANILLA JAVASCRIPT APPLICATION LOGIC
+       ========================================================================== -->
+  <script>
+    /**
+     * RideQuetta — Core Application Logic
+     * Single-file vanilla JavaScript architecture
+     */
+    'use strict';
+
+    /* ==========================================================================
+       1. SYSTEM CONFIGURATION & PLACEHOLDERS
+       ========================================================================== */
+    const RideQuettaConfig = {
+      brandName: 'RideQuetta',
+      tagline: 'Book a Rickshaw Anywhere in Quetta',
+      city: 'Quetta, Balochistan, Pakistan',
+      contact: {
+        phone: '+92 81 2890 000',
+        whatsapp: '+923000000000', // Update with actual business WhatsApp number
+        email: 'contact@ridequetta.pk',
+        office: 'Jinnah Road, Quetta, Balochistan'
+      },
+      fareRates: {
+        baseFare: 80,         // PKR base starting fare
+        perKmRate: 35,        // PKR per road kilometer
+        minFareStandard: 120, // PKR minimum
+        minFareShared: 80,
+        minFarePremium: 180,
+        multipliers: {
+          standard: 1.0,
+          shared: 0.65,
+          premium: 1.40
+        },
+        roadCurvatureFactor: 1.32 // Approximates mountain/bazaar road distance vs straight-line
+      },
+      supabase: {
+        url: '', // Add Supabase project URL here for production
+        anonKey: '' // Add Supabase anon key here for production
+      }
+    };
+
+    /* ==========================================================================
+       2. REAL QUETTA LANDMARKS & COORDINATES DATABASE
+       ========================================================================== */
+    const QuettaLocations = [
+      { id: 'jinnah-town', name: 'Jinnah Town', lat: 30.2085, lng: 66.9920, area: 'North Quetta' },
+      { id: 'satellite-town', name: 'Satellite Town', lat: 30.1582, lng: 66.9984, area: 'South Quetta' },
+      { id: 'hazara-town', name: 'Hazara Town', lat: 30.1720, lng: 66.9420, area: 'West Quetta / Brewery' },
+      { id: 'brewery-road', name: 'Brewery Road', lat: 30.1830, lng: 66.9550, area: 'Western Bypass Link' },
+      { id: 'sariab-road', name: 'Sariab Road', lat: 30.1420, lng: 66.9850, area: 'Sariab Hub' },
+      { id: 'quetta-cantt', name: 'Quetta Cantt', lat: 30.2250, lng: 67.0180, area: 'Cantt Area' },
+      { id: 'spinny-road', name: 'Spinny Road', lat: 30.2100, lng: 66.9750, area: 'North-West Quetta' },
+      { id: 'sariab-phatak', name: 'Sariab Phatak', lat: 30.1550, lng: 66.9900, area: 'Railway Crossing / Sariab' },
+      { id: 'airport-road', name: 'Airport Road', lat: 30.2350, lng: 66.9520, area: 'Airport Corridor' },
+      { id: 'liaquat-bazaar', name: 'Liaquat Bazaar', lat: 30.1920, lng: 67.0080, area: 'City Commercial Center' },
+      { id: 'kasi-road', name: 'Kasi Road', lat: 30.1860, lng: 67.0150, area: 'Central Quetta' },
+      { id: 'quarry-road', name: 'Quarry Road', lat: 30.1960, lng: 67.0220, area: 'East Central' },
+      { id: 'jinnah-road', name: 'Jinnah Road', lat: 30.1950, lng: 67.0120, area: 'Main Civic Arterial' },
+      { id: 'alamdar-road', name: 'Alamdar Road', lat: 30.1890, lng: 67.0310, area: 'Marriabad Sector' },
+      { id: 'samungli-road', name: 'Samungli Road', lat: 30.2190, lng: 66.9650, area: 'Airbase Sector' },
+      { id: 'uob', name: 'University of Balochistan', lat: 30.1520, lng: 66.9830, area: 'Sariab Road' },
+      { id: 'buitems', name: 'BUITEMS (Takatu Campus)', lat: 30.2850, lng: 66.9720, area: 'Airport Bypass' },
+      { id: 'civil-hospital', name: 'Civil Hospital Quetta', lat: 30.1915, lng: 67.0110, area: 'City Center' },
+      { id: 'railway-station', name: 'Quetta Railway Station', lat: 30.1870, lng: 67.0040, area: 'Zarghoon Road' },
+      { id: 'quetta-airport', name: 'Quetta International Airport', lat: 30.2510, lng: 66.9380, area: 'Airport Terminal' },
+      { id: 'nawan-killi', name: 'Nawan Killi', lat: 30.2450, lng: 67.0120, area: 'Suburban North' },
+      { id: 'meezan-chowk', name: 'Meezan Chowk', lat: 30.1930, lng: 67.0100, area: 'Old Town Bazaar' }
+    ];
+
+    /* App State */
+    let activeRideType = 'standard';
+    let currentMap = null;
+    let pickupMarker = null;
+    let destinationMarker = null;
+    let routePolyline = null;
+    let pendingBookingData = null;
+
+    /* ==========================================================================
+       3. DOM INITIALIZATION
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      renderAreasGrid();
+      initAutocomplete();
+      initMap();
+      setupMobileMenu();
+      setupActiveNavHighlight();
+
+      // Recalculate fare when inputs change
+      document.getElementById('mainPickup').addEventListener('input', updateFareEstimate);
+      document.getElementById('mainDestination').addEventListener('input', updateFareEstimate);
+
+      // Listen for ESC key to dismiss modals
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeAllModals();
+        }
+      });
+    });
+
+    /* ==========================================================================
+       4. POPULAR AREAS GRID (Matching Screenshot 2)
+       ========================================================================== */
+    function renderAreasGrid() {
+      const grid = document.getElementById('areasGrid');
+      if (!grid) return;
+
+      // Select top 12 locations matching Screenshot 2
+      const top12 = QuettaLocations.slice(0, 12);
+      grid.innerHTML = top12.map(loc => `
+        <div class="area-card" onclick="quickSelectArea('${escapeHtml(loc.name)}')">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div class="area-icon-wrap">
+              <svg fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <span class="set-pickup-badge">Set as Pickup &rarr;</span>
+          </div>
+          <div>
+            <div class="area-name">${escapeHtml(loc.name)}</div>
+            <div class="area-status">
+              <span>Popular Location</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function quickSelectArea(areaName) {
+      const mainPickup = document.getElementById('mainPickup');
+      const quickPickup = document.getElementById('quickPickup');
+      
+      if (mainPickup) {
+        mainPickup.value = areaName;
+        mainPickup.focus();
+      }
+      if (quickPickup) {
+        quickPickup.value = areaName;
+      }
+
+      updateFareEstimate();
+      updateMapMarkers();
+
+      // Smooth scroll to booking section
+      const bookSec = document.getElementById('book');
+      if (bookSec) {
+        bookSec.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      showToast(`Pickup set to: ${areaName}`);
+    }
+
+    /* ==========================================================================
+       5. AUTOCOMPLETE ENGINE (For Quetta Locations)
+       ========================================================================== */
+    function initAutocomplete() {
+      setupInputAutocomplete('quickPickup', 'quickPickupList', (val) => {
+        document.getElementById('quickPickup').value = val;
+        document.getElementById('mainPickup').value = val;
+        updateFareEstimate();
+        updateMapMarkers();
+      });
+
+      setupInputAutocomplete('quickDestination', 'quickDestinationList', (val) => {
+        document.getElementById('quickDestination').value = val;
+        document.getElementById('mainDestination').value = val;
+        updateFareEstimate();
+        updateMapMarkers();
+      });
+
+      setupInputAutocomplete('mainPickup', 'mainPickupList', (val) => {
+        document.getElementById('mainPickup').value = val;
+        document.getElementById('quickPickup').value = val;
+        updateFareEstimate();
+        updateMapMarkers();
+      });
+
+      setupInputAutocomplete('mainDestination', 'mainDestinationList', (val) => {
+        document.getElementById('mainDestination').value = val;
+        document.getElementById('quickDestination').value = val;
+        updateFareEstimate();
+        updateMapMarkers();
+      });
+    }
+
+    function setupInputAutocomplete(inputId, listId, onSelect) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(listId);
+      if (!input || !list) return;
+
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+        if (query.length === 0) {
+          list.style.display = 'none';
+          return;
+        }
+
+        const matches = QuettaLocations.filter(loc => 
+          loc.name.toLowerCase().includes(query) || 
+          loc.area.toLowerCase().includes(query)
+        ).slice(0, 6);
+
+        if (matches.length === 0) {
+          list.innerHTML = `
+            <div class="autocomplete-item" style="color: var(--text-muted); cursor: default;">
+              Custom address: "${escapeHtml(input.value)}"
+            </div>
+          `;
+          list.style.display = 'block';
+          return;
+        }
+
+        list.innerHTML = matches.map(m => `
+          <div class="autocomplete-item" data-val="${escapeHtml(m.name)}">
+            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+            <div>
+              <strong>${escapeHtml(m.name)}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(m.area)}</div>
+            </div>
+          </div>
+        `).join('');
+
+        list.style.display = 'block';
+
+        list.querySelectorAll('.autocomplete-item[data-val]').forEach(item => {
+          item.addEventListener('click', () => {
+            const val = item.getAttribute('data-val');
+            onSelect(val);
+            list.style.display = 'none';
+          });
+        });
+      });
+
+      // Hide dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !list.contains(e.target)) {
+          list.style.display = 'none';
+        }
+      });
+    }
+
+    /* ==========================================================================
+       6. RIDE TYPE SELECTOR
+       ========================================================================== */
+    function selectRideType(type, element) {
+      activeRideType = type;
+      
+      // Sync quick cards
+      document.querySelectorAll('#quickBookingCard .ride-type-card').forEach(c => c.classList.remove('active'));
+      element.classList.add('active');
+
+      // Sync main cards
+      document.querySelectorAll('#mainRideTypeSelector .ride-type-card').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-type') === type);
+      });
+
+      updateFareEstimate();
+    }
+
+    function selectMainRideType(type, element) {
+      activeRideType = type;
+
+      // Sync main cards
+      document.querySelectorAll('#mainRideTypeSelector .ride-type-card').forEach(c => c.classList.remove('active'));
+      element.classList.add('active');
+
+      // Sync quick cards
+      document.querySelectorAll('#quickBookingCard .ride-type-card').forEach(c => {
+        c.classList.toggle('active', c.getAttribute('data-type') === type);
+      });
+
+      updateFareEstimate();
+    }
+
+    function transferQuickToMainBooking() {
+      const qp = document.getElementById('quickPickup').value.trim();
+      const qd = document.getElementById('quickDestination').value.trim();
+
+      if (qp) document.getElementById('mainPickup').value = qp;
+      if (qd) document.getElementById('mainDestination').value = qd;
+
+      updateFareEstimate();
+      updateMapMarkers();
+
+      const bookSec = document.getElementById('book');
+      if (bookSec) {
+        bookSec.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      if (!qp) {
+        document.getElementById('mainPickup').focus();
+      } else if (!qd) {
+        document.getElementById('mainDestination').focus();
+      } else {
+        document.getElementById('passengerName').focus();
+      }
+    }
+
+    /* ==========================================================================
+       7. TRANSPARENT FARE ESTIMATE CALCULATOR
+       ========================================================================== */
+    function calculateDistanceKm(loc1Name, loc2Name) {
+      const loc1 = QuettaLocations.find(l => l.name.toLowerCase() === loc1Name.toLowerCase());
+      const loc2 = QuettaLocations.find(l => l.name.toLowerCase() === loc2Name.toLowerCase());
+
+      if (loc1 && loc2) {
+        if (loc1.id === loc2.id) return 0;
+        
+        // Haversine formula
+        const R = 6371; // Earth radius in km
+        const dLat = deg2rad(loc2.lat - loc1.lat);
+        const dLon = deg2rad(loc2.lng - loc1.lng);
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(deg2rad(loc1.lat)) * Math.cos(deg2rad(loc2.lat)) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const straightDistance = R * c;
+
+        // Apply Quetta road curvature / terrain factor
+        return Math.max(1.2, +(straightDistance * RideQuettaConfig.fareRates.roadCurvatureFactor).toFixed(1));
+      }
+
+      // Default average Quetta trip estimate for custom addresses
+      return 5.2;
+    }
+
+    function deg2rad(deg) {
+      return deg * (Math.PI / 180);
+    }
+
+    function updateFareEstimate() {
+      const pickupVal = document.getElementById('mainPickup').value.trim();
+      const destVal = document.getElementById('mainDestination').value.trim();
+
+      const fareDisplay = document.getElementById('fareDisplay');
+      const distText = document.getElementById('fareDistanceText');
+      const rateText = document.getElementById('fareRateText');
+
+      if (!pickupVal || !destVal) {
+        fareDisplay.textContent = 'PKR 140 – 190';
+        distText.textContent = 'Estimated Distance: ~4.5 km';
+        return;
+      }
+
+      if (pickupVal.toLowerCase() === destVal.toLowerCase()) {
+        fareDisplay.textContent = 'PKR 0';
+        distText.textContent = 'Pickup and destination are identical';
+        return;
+      }
+
+      const distKm = calculateDistanceKm(pickupVal, destVal);
+      const rates = RideQuettaConfig.fareRates;
+      const multiplier = rates.multipliers[activeRideType] || 1.0;
+
+      let rawFare = (rates.baseFare + (distKm * rates.perKmRate)) * multiplier;
+
+      let minFare = rates.minFareStandard;
+      if (activeRideType === 'shared') minFare = rates.minFareShared;
+      if (activeRideType === 'premium') minFare = rates.minFarePremium;
+
+      const finalFare = Math.max(minFare, rawFare);
+      const lowRange = Math.round((finalFare * 0.95) / 10) * 10;
+      const highRange = Math.round((finalFare * 1.12) / 10) * 10;
+
+      fareDisplay.textContent = `PKR ${lowRange} – ${highRange}`;
+      distText.textContent = `Approx. Road Distance: ~${distKm} km`;
+      rateText.textContent = `${activeRideType.toUpperCase()} Ride (Base PKR ${rates.baseFare} + PKR ${rates.perKmRate}/km)`;
+    }
+
+    /* ==========================================================================
+       8. LEAFLET INTERACTIVE MAP INTEGRATION
+       ========================================================================== */
+    function initMap() {
+      try {
+        const quettaCenter = [30.1798, 66.9750]; // Quetta Coordinates
+
+        if (typeof L === 'undefined') {
+          console.warn('Leaflet library not loaded, showing fallback pattern.');
+          toggleMapView('pattern');
+          return;
+        }
+
+        currentMap = L.map('quetta-map', {
+          center: quettaCenter,
+          zoom: 13,
+          zoomControl: true
+        });
+
+        // OpenStreetMap Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          attribution: '&copy; OpenStreetMap contributors | RideQuetta'
+        }).addTo(currentMap);
+
+        // Custom Rickshaw / Pin Marker Icons
+        const greenIcon = L.divIcon({
+          className: 'custom-map-pin',
+          html: '<div style="background:#059669;width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;">P</div>',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+
+        const blueIcon = L.divIcon({
+          className: 'custom-map-pin',
+          html: '<div style="background:#0284c7;width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:bold;">D</div>',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+
+        // Initialize markers
+        pickupMarker = L.marker([30.2085, 66.9920], { icon: greenIcon }).addTo(currentMap).bindPopup('<b>Pickup</b>: Jinnah Town');
+        destinationMarker = L.marker([30.2250, 67.0180], { icon: blueIcon }).addTo(currentMap).bindPopup('<b>Destination</b>: Quetta Cantt');
+
+        // Draw initial connector line
+        drawRouteLine([30.2085, 66.9920], [30.2250, 67.0180]);
+      } catch (err) {
+        console.error('Map init error:', err);
+        toggleMapView('pattern');
+      }
+    }
+
+    function drawRouteLine(latlng1, latlng2) {
+      if (!currentMap) return;
+      if (routePolyline) currentMap.removeLayer(routePolyline);
+
+      routePolyline = L.polyline([latlng1, latlng2], {
+        color: '#0d9488',
+        weight: 4,
+        opacity: 0.85,
+        dashArray: '8, 8'
+      }).addTo(currentMap);
+
+      const bounds = L.latLngBounds([latlng1, latlng2]);
+      currentMap.fitBounds(bounds, { padding: [50, 50] });
+    }
+
+    function updateMapMarkers() {
+      if (!currentMap) return;
+
+      const pickupVal = document.getElementById('mainPickup').value.trim();
+      const destVal = document.getElementById('mainDestination').value.trim();
+
+      const pLoc = QuettaLocations.find(l => l.name.toLowerCase() === pickupVal.toLowerCase());
+      const dLoc = QuettaLocations.find(l => l.name.toLowerCase() === destVal.toLowerCase());
+
+      if (pLoc && pickupMarker) {
+        pickupMarker.setLatLng([pLoc.lat, pLoc.lng]).bindPopup(`<b>Pickup</b>: ${escapeHtml(pLoc.name)}`);
+      }
+      if (dLoc && destinationMarker) {
+        destinationMarker.setLatLng([dLoc.lat, dLoc.lng]).bindPopup(`<b>Destination</b>: ${escapeHtml(dLoc.name)}`);
+      }
+
+      if (pLoc && dLoc) {
+        drawRouteLine([pLoc.lat, pLoc.lng], [dLoc.lat, dLoc.lng]);
+      }
+    }
+
+    function toggleMapView(view) {
+      const liveBtn = document.getElementById('btnShowLiveMap');
+      const patternBtn = document.getElementById('btnShowPattern');
+      const mapDiv = document.getElementById('quetta-map');
+      const placeholder = document.getElementById('mapPlaceholder');
+
+      if (view === 'live') {
+        liveBtn.classList.add('active');
+        patternBtn.classList.remove('active');
+        mapDiv.style.display = 'block';
+        placeholder.style.display = 'none';
+        if (currentMap) currentMap.invalidateSize();
+      } else {
+        liveBtn.classList.remove('active');
+        patternBtn.classList.add('active');
+        mapDiv.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }
+    }
+
+    /* ==========================================================================
+       9. BOOKING FORM SUBMISSION & LIFECYCLE
+       ========================================================================== */
+    function handleBookingSubmit(event) {
+      event.preventDefault();
+
+      const pickup = document.getElementById('mainPickup').value.trim();
+      const destination = document.getElementById('mainDestination').value.trim();
+      const passenger = document.getElementById('passengerName').value.trim();
+      const phone = document.getElementById('passengerPhone').value.trim();
+      const notes = document.getElementById('driverNotes').value.trim();
+
+      let hasError = false;
+
+      // Reset error states
+      ['pickupGroup', 'destinationGroup', 'nameGroup', 'phoneGroup'].forEach(id => {
+        document.getElementById(id).classList.remove('has-error');
+      });
+
+      if (!pickup) {
+        document.getElementById('pickupGroup').classList.add('has-error');
+        hasError = true;
+      }
+
+      if (!destination || destination.toLowerCase() === pickup.toLowerCase()) {
+        document.getElementById('destinationGroup').classList.add('has-error');
+        hasError = true;
+      }
+
+      if (!passenger) {
+        document.getElementById('nameGroup').classList.add('has-error');
+        hasError = true;
+      }
+
+      // Pakistani phone format validation (03XX XXXXXXX or +923XX XXXXXXX)
+      const cleanPhone = phone.replace(/[\s-]/g, '');
+      const pakPhoneRegex = /^((\+92)|(0092)|(92)|(0))?3[0-9]{9}$/;
+      if (!cleanPhone || !pakPhoneRegex.test(cleanPhone)) {
+        document.getElementById('phoneGroup').classList.add('has-error');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      const fareText = document.getElementById('fareDisplay').textContent;
+
+      pendingBookingData = {
+        pickup,
+        destination,
+        rideType: activeRideType,
+        passengerName: passenger,
+        phone: cleanPhone,
+        notes: notes || 'None',
+        estimatedFare: fareText,
+        createdAt: new Date().toISOString()
+      };
+
+      // Populate Review Modal
+      document.getElementById('reviewPickup').textContent = pickup;
+      document.getElementById('reviewDestination').textContent = destination;
+      document.getElementById('reviewType').textContent = activeRideType.toUpperCase();
+      document.getElementById('reviewFare').textContent = fareText;
+      document.getElementById('reviewPassenger').textContent = passenger;
+      document.getElementById('reviewPhone').textContent = phone;
+      document.getElementById('reviewNotes').textContent = notes || 'No additional notes';
+
+      openModal('bookingReviewModal');
+    }
+
+    function finalizeBooking() {
+      if (!pendingBookingData) return;
+
+      const confirmBtn = document.getElementById('confirmFinalBookingBtn');
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Submitting...';
+
+      // Generate unique Quetta booking ID: RQ-XXXXXX
+      const randomRef = 'RQ-' + Math.floor(100000 + Math.random() * 900000);
+      pendingBookingData.bookingId = randomRef;
+      pendingBookingData.status = 'Request submitted — Awaiting confirmation';
+
+      // Save to LocalStorage / Demo Store
+      saveBookingRecord(pendingBookingData);
+
+      setTimeout(() => {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm & Submit';
+        closeModal('bookingReviewModal');
+
+        // Populate Success Modal
+        document.getElementById('successBookingId').textContent = randomRef;
+        document.getElementById('successPickupText').textContent = pendingBookingData.pickup;
+        document.getElementById('successDestinationText').textContent = pendingBookingData.destination;
+        document.getElementById('successFareText').textContent = pendingBookingData.estimatedFare;
+
+        openModal('bookingSuccessModal');
+
+        // Reset form
+        document.getElementById('bookingForm').reset();
+        updateFareEstimate();
+      }, 600);
+    }
+
+    function saveBookingRecord(booking) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('ridequetta_bookings') || '[]');
+        stored.unshift(booking);
+        localStorage.setItem('ridequetta_bookings', JSON.stringify(stored.slice(0, 20)));
+      } catch (e) {
+        console.warn('LocalStorage error:', e);
+      }
+    }
+
+    function shareOnWhatsApp() {
+      if (!pendingBookingData) return;
+      const text = encodeURIComponent(
+        `*RideQuetta Booking Request*\n` +
+        `Ref ID: ${pendingBookingData.bookingId}\n` +
+        `Pickup: ${pendingBookingData.pickup}\n` +
+        `Destination: ${pendingBookingData.destination}\n` +
+        `Type: ${pendingBookingData.rideType.toUpperCase()}\n` +
+        `Est. Fare: ${pendingBookingData.estimatedFare}\n` +
+        `Status: Awaiting Confirmation`
+      );
+      window.open(`https://wa.me/?text=${text}`, '_blank');
+    }
+
+    function openWhatsAppChat() {
+      const whatsappNumber = RideQuettaConfig.contact.whatsapp.replace(/\D/g, '');
+      const text = encodeURIComponent(`Hello RideQuetta team, I have an inquiry about rickshaw bookings in Quetta.`);
+      window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank');
+    }
+
+    /* ==========================================================================
+       10. TRACK RIDE STATUS LOOKUP
+       ========================================================================== */
+    function openTrackModal() {
+      document.getElementById('trackInput').value = '';
+      document.getElementById('trackResultBox').style.display = 'none';
+      document.getElementById('trackErrorBox').style.display = 'none';
+      openModal('trackRideModal');
+    }
+
+    function lookupBookingStatus() {
+      const query = document.getElementById('trackInput').value.trim().toUpperCase();
+      const resBox = document.getElementById('trackResultBox');
+      const errBox = document.getElementById('trackErrorBox');
+
+      if (!query) return;
+
+      try {
+        const stored = JSON.parse(localStorage.getItem('ridequetta_bookings') || '[]');
+        const match = stored.find(b => b.bookingId === query);
+
+        if (match) {
+          errBox.style.display = 'none';
+          document.getElementById('trackResultId').textContent = match.bookingId;
+          document.getElementById('trackResultRoute').textContent = `${match.pickup} ➔ ${match.destination}`;
+          document.getElementById('trackResultType').textContent = match.rideType.toUpperCase();
+          document.getElementById('trackResultFare').textContent = match.estimatedFare;
+          document.getElementById('trackResultTime').textContent = new Date(match.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' (PKT)';
+
+          resBox.style.display = 'block';
+        } else {
+          resBox.style.display = 'none';
+          errBox.style.display = 'block';
+        }
+      } catch (e) {
+        resBox.style.display = 'none';
+        errBox.style.display = 'block';
+      }
+    }
+
+    /* ==========================================================================
+       11. DRIVER REGISTRATION FORM HANDLER
+       ========================================================================== */
+    function handleDriverSubmit(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('driverName').value.trim();
+      const phone = document.getElementById('driverPhone').value.trim();
+      const plate = document.getElementById('driverPlate').value.trim();
+      const vehicleType = document.getElementById('vehicleType').value;
+      const licence = document.getElementById('licenceStatus').value;
+      const consent = document.getElementById('driverConsent').checked;
+
+      let hasError = false;
+
+      if (!name) {
+        document.getElementById('driverNameGroup').classList.add('has-error');
+        hasError = true;
+      }
+      if (!phone) {
+        document.getElementById('driverPhoneGroup').classList.add('has-error');
+        hasError = true;
+      }
+      if (!plate) {
+        document.getElementById('driverPlateGroup').classList.add('has-error');
+        hasError = true;
+      }
+      if (!consent) {
+        showToast('Please accept the consent terms.');
+        return;
+      }
+
+      if (hasError) return;
+
+      const submitBtn = document.getElementById('submitDriverBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting Application...';
+
+      const driverRef = 'DRV-' + Math.floor(10000 + Math.random() * 90000);
+
+      // Save driver registration record locally
+      const driverRecord = {
+        driverRef,
+        name,
+        phone,
+        plate,
+        vehicleType,
+        licence,
+        submittedAt: new Date().toISOString()
+      };
+
+      try {
+        const drivers = JSON.parse(localStorage.getItem('ridequetta_drivers') || '[]');
+        drivers.unshift(driverRecord);
+        localStorage.setItem('ridequetta_drivers', JSON.stringify(drivers));
+      } catch (err) {
+        console.warn('Driver store error:', err);
+      }
+
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Driver Application';
+
+        document.getElementById('driverSuccessRef').textContent = driverRef;
+        openModal('driverSuccessModal');
+        document.getElementById('driverForm').reset();
+      }, 700);
+    }
+
+    /* ==========================================================================
+       12. CONTACT FORM & APP NOTIFY HANDLER
+       ========================================================================== */
+    function handleContactSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById('contactName').value.trim();
+      showToast(`Thank you, ${name}! Your message has been received.`);
+      document.getElementById('contactForm').reset();
+    }
+
+    function openAppModal(storeName) {
+      document.getElementById('appStoreName').textContent = storeName;
+      document.getElementById('appNotifyInput').value = '';
+      openModal('appAlertModal');
+    }
+
+    function handleAppWaitlist() {
+      const val = document.getElementById('appNotifyInput').value.trim();
+      if (!val) {
+        showToast('Please enter your mobile or email address.');
+        return;
+      }
+      showToast('Thank you! You will be notified at launch.');
+      closeModal('appAlertModal');
+    }
+
+    function openConfigModal() {
+      openModal('configModal');
+    }
+
+    /* ==========================================================================
+       13. LEGAL & INFORMATIONAL MODALS (FAQ, Privacy, Terms)
+       ========================================================================== */
+    function openLegalModal(type) {
+      const title = document.getElementById('legalModalTitle');
+      const body = document.getElementById('legalModalBody');
+
+      if (type === 'faq') {
+        title.textContent = 'Frequently Asked Questions';
+        body.innerHTML = `
+          <div class="faq-item active">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>How does RideQuetta calculate rickshaw fares?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              Our fare calculator estimates road distance between real Quetta landmarks (such as Jinnah Town, Sariab, Cantt, Hazara Town) using calibrated road curvature factors. It applies a clear base fare (PKR 80) plus transparent per-kilometer rates.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>How do I pay for my ride?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              All rides on RideQuetta are paid directly in cash to your driver upon reaching your destination. No electronic wallets or forced cards are required.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>What is Shared vs Standard ride?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              A Standard ride books the whole private rickshaw exclusively for you. Shared rides are lower-fare options intended for passengers along common arterial routes like Sariab Road or Airport Road, subject to seat availability.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="toggleFaq(this)">
+              <span>Is RideQuetta operational across all of Quetta?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              We are currently in active rollout across key transit corridors. While we expand our driver network, the web app operates in demo and pilot mode to establish fair routes.
+            </div>
+          </div>
+        `;
+      } else if (type === 'privacy') {
+        title.textContent = 'Privacy Policy';
+        body.innerHTML = `
+          <div style="font-size: 0.875rem; line-height: 1.6; color: var(--text-muted);">
+            <p><strong>Effective Date:</strong> October 2026</p>
+            <p style="margin-top: 8px;"><strong>1. Information Collection:</strong> RideQuetta collects only necessary operational ride details, including passenger name, mobile phone number, and pickup/destination landmarks.</p>
+            <p style="margin-top: 8px;"><strong>2. Use of Information:</strong> Contact numbers are used strictly for trip coordination and driver dispatch. We do not sell or share personal information with third-party advertisers.</p>
+            <p style="margin-top: 8px;"><strong>3. Storage & Security:</strong> In this static demonstration deployment, records are stored within your browser session or secure server endpoints without exposing credentials.</p>
+          </div>
+        `;
+      } else if (type === 'terms') {
+        title.textContent = 'Terms & Conditions';
+        body.innerHTML = `
+          <div style="font-size: 0.875rem; line-height: 1.6; color: var(--text-muted);">
+            <p><strong>1. Service Scope:</strong> RideQuetta provides a local ride coordination platform connecting passengers with independent rickshaw operators in Quetta, Balochistan.</p>
+            <p style="margin-top: 8px;"><strong>2. Fare Estimates:</strong> All fares displayed on the website are non-binding estimates based on typical road conditions and may vary upon final route or waiting time.</p>
+            <p style="margin-top: 8px;"><strong>3. Safety & Conduct:</strong> Both passengers and drivers are expected to treat each other with mutual respect and adhere to local traffic laws.</p>
+          </div>
+        `;
+      }
+
+      openModal('legalModal');
+    }
+
+    function toggleFaq(el) {
+      el.parentElement.classList.toggle('active');
+    }
+
+    /* ==========================================================================
+       14. GENERAL MODAL & TOAST UTILITIES
+       ========================================================================== */
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function closeAllModals() {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-item';
+      toast.innerHTML = `
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary); flex-shrink: 0;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span style="font-size: 0.875rem; color: var(--text-main); font-weight: 500;">${escapeHtml(message)}</span>
+      `;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(100%)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[m]);
+    }
+
+    /* ==========================================================================
+       15. MOBILE MENU & NAVIGATION HIGHLIGHTS
+       ========================================================================== */
+    function setupMobileMenu() {
+      const toggle = document.getElementById('mobileToggle');
+      const drawer = document.getElementById('mobileDrawer');
+      if (!toggle || !drawer) return;
+
+      toggle.addEventListener('click', () => {
+        drawer.classList.toggle('open');
+      });
+
+      drawer.addEventListener('click', (e) => {
+        if (e.target === drawer) {
+          closeMobileMenu();
+        }
+      });
+
+      document.querySelectorAll('.mobile-nav-link').forEach(link => {
+        link.addEventListener('click', closeMobileMenu);
+      });
+    }
+
+    function closeMobileMenu() {
+      const drawer = document.getElementById('mobileDrawer');
+      if (drawer) drawer.classList.remove('open');
+    }
+
+    function setupActiveNavHighlight() {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-menu .nav-link');
+
+      window.addEventListener('scroll', () => {
+        let current = 'home';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          if (window.pageYOffset >= sectionTop) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>
